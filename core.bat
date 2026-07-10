@@ -1,7 +1,7 @@
 @echo off
-:: 强行切换本地黑框框为 UTF-8 编码，完美兼容云端拉取下来的中文
+:: 强制本地黑框框使用 UTF-8 编码，防止中文乱码和代码被吞
 chcp 65001 >nul
-title YouTube 顶级画质全自动流水线 (云端托管版)
+title YouTube 顶级画质全自动流水线 (Chrome云端托管版)
 color 0B
 
 echo ==========================================
@@ -44,7 +44,7 @@ set /p choice="请选择操作模式 (输入 1, 2 或 3 并按回车): "
 
 if "%choice%"=="1" goto SINGLE
 if "%choice%"=="2" goto BATCH
-:: 核心修复：这里必须使用 exit /b，代表温和退出当前模块，把控制权还给本地启动器去执行删除命令
+:: 核心修复：必须使用 exit /b 温和退出，交还控制权给本地启动器以执行销毁命令
 if "%choice%"=="3" exit /b
 goto MENU
 
@@ -62,7 +62,8 @@ if "%url%"=="" goto SINGLE_LOOP
 
 echo.
 echo 正在全速抓取最高画质原盘，请耐心稍候...
-yt-dlp -f "bestvideo+bestaudio/best" --merge-output-format mkv "%url%"
+:: 核心突破：借用 Chrome 浏览器身份，无视 YouTube 机器人验证
+yt-dlp --cookies-from-browser chrome -f "bestvideo+bestaudio/best" --merge-output-format mkv "%url%"
 echo.
 echo [OK] 当前视频下载合并完毕！
 echo ------------------------------------------
@@ -85,7 +86,8 @@ if not exist "links.txt" (
 )
 
 echo 正在读取 links.txt 中的链接并开始排队下载...
-yt-dlp -f "bestvideo+bestaudio/best" --merge-output-format mkv -a links.txt
+:: 核心突破：借用 Chrome 浏览器身份，无视 YouTube 机器人验证
+yt-dlp --cookies-from-browser chrome -f "bestvideo+bestaudio/best" --merge-output-format mkv -a links.txt
 echo.
 echo 批量下载任务全部完成！
 pause
